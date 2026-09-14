@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Faculty Dashboard | MicroLearn</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #333;
+        }
+
+        /* Header */
+
+        .header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 22px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .header-title {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        /* Main */
+
+        .container {
+            padding: 40px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 30px;
+        }
+
+        /* Stats */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 30px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Table */
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #f1f3f9;
+            padding: 15px;
+            text-align: left;
+            font-size: 14px;
+            color: #555;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #fafbff;
+        }
+
+        /* Status */
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .completed {
+            background: #dff6e5;
+            color: #218838;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .not-generated {
+            background: #f1f1f1;
+            color: #666;
+        }
+
+        /* Empty */
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    
+
+    <div class="header">
+
+        <a href="/faculty_logout" style="
+    float: right;
+    padding: 10px 18px;
+    background: #dc2626;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+">
+    Logout
+</a>
+    
+        <div class="logo">
+            MICRO<span style="opacity: 0.8;">LEARN</span>
+        </div>
+
+        <div class="header-title">
+            Faculty Dashboard
+        </div>
+
+    </div>
+
+
+    <!-- Main -->
+
+    <div class="container">
+
+        <h1>Faculty Dashboard</h1>
+
+        <div style="
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:10px;
+    margin-bottom:20px;
+">
+
+    <form method="POST"
+          action="/clear_records"
+          onsubmit="return confirm('Are you sure you want to delete ALL student records? This cannot be undone.');">
+
+        <button type="submit"
+                style="
+                    padding:10px 18px;
+                    background:#b91c1c;
+                    color:white;
+                    border:none;
+                    border-radius:6px;
+                    font-weight:bold;
+                    cursor:pointer;
+                ">
+            Clear All Records
+        </button>
+    </form>
+
+    
+
+</div>
+
+        <p class="subtitle">
+            Monitor student learning progress and quiz results
+        </p>
+        
+
+        <form method="GET" action="/dashboard" style="margin-bottom: 25px;">
+
+    <label for="section" style="font-weight: bold; margin-right: 10px;">
+        Filter by Section:
+    </label>
+
+    <select
+        name="section"
+        id="section"
+        onchange="this.form.submit()"
+        style="
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        "
+    >
+
+        <option value="ALL"
+            {% if selected_section == "ALL" %}selected{% endif %}>
+            All Sections
+        </option>
+
+        <option value="A"
+            {% if selected_section == "A" %}selected{% endif %}>
+            Section A
+        </option>
+
+        <option value="B"
+            {% if selected_section == "B" %}selected{% endif %}>
+            Section B
+        </option>
+
+        <option value="C"
+            {% if selected_section == "C" %}selected{% endif %}>
+            Section C
+        </option>
+
+        <option value="D"
+            {% if selected_section == "D" %}selected{% endif %}>
+            Section D
+        </option>
+
+        <option value="E"
+            {% if selected_section == "E" %}selected{% endif %}>
+            Section E
+        </option>
+
+    </select>
+
+</form>
+
+<form method="GET" action="/dashboard" style="margin-bottom: 25px;">
+
+    <input
+        type="text"
+        name="search"
+        placeholder="Search by name or register number"
+        value="{{ search }}"
+        style="
+            padding: 10px 15px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        "
+    >
+
+    <button
+        type="submit"
+        style="
+            padding: 10px 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        "
+    >
+        Search
+    </button>
+
+</form>
+
+
+        <!-- Statistics -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <h3>Total Students</h3>
+                <p>{{ students|length }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Video Completed</h3>
+
+                <p>
+                    {{ students|selectattr("video_completed", "equalto", 1)|list|length }}
+                </p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Quiz Completed</h3>
+
+                <p>
+                    {{ students|selectattr("quiz_completed", "equalto", 1)|list|length }}
+                </p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Certificates</h3>
+
+                <p>
+                    {{ students|selectattr("certificate_generated", "equalto", 1)|list|length }}
+                </p>
+            </div>
+
+        </div>
+
+
+        <!-- Student Table -->
+
+        <div class="table-container">
+
+            <div class="table-title">
+                Student Progress
+            </div>
+
+            {% if students %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>#</th>
+                        <th>Register Number</th>
+                        <th>Name</th>
+                        <th>Section</th>
+                        <th>Video Progress</th>
+                        <th>Video Status</th>
+                        <th>Quiz Status</th>
+                        <th>Score</th>
+                        <th>Certificate</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for student in students %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+                        <td>
+                            <strong>{{ student["register_no"] }}</strong>
+                        </td>
+
+                        <td>
+                            {{ student["name"] }}
+                        </td>
+
+                        <td>
+                            {{ student["section"] }}
+                        </td>
+                        <td>
+                            {{ student["video_progress"]|round(0) }}%
+                        </td>
+
+                        <td>
+
+                            {% if student["video_completed"] == 1 %}
+
+                            <span class="status completed">
+                                Completed
+                            </span>
+
+                            {% else %}
+
+                            <span class="status pending">
+                                In Progress
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if student["quiz_completed"] == 1 %}
+
+                            <span class="status completed">
+                                Completed
+                            </span>
+
+                            {% else %}
+
+                            <span class="status pending">
+                                Not Attempted
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if student["quiz_completed"] == 1 %}
+
+                            {{ student["score"] }} /
+                            {{ student["total_questions"] }}
+
+                            {% else %}
+
+                            —
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if student["certificate_generated"] == 1 %}
+
+                            <span class="status completed">
+                                Generated
+                            </span>
+
+                            {% else %}
+
+                            <span class="status not-generated">
+                                Not Generated
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="empty">
+
+                <h3>No students yet</h3>
+
+                <p>
+                    Student records will appear here when students start learning.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroLearn Quiz</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .student-info {
+            background: #eef2ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .question p {
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #5568d8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>8086 Architecture & Functional Concepts Quiz</h1>
+
+    <div class="student-info">
+        <strong>Student:</strong> {{ name }}<br>
+        <strong>Register Number:</strong> {{ register_no }}<br>
+        <strong>Section:</strong> {{ section }}
+    </div>
+
+    <form method="POST" action="/submit_quiz">
+
+        <div class="question">
+            <p>1. Which sequence best represents the general data flow described for a computer system?</p>
+            <label><input type="radio" name="q1" value="a" required> A) CPU → Input → Memory → Output</label>
+            <label><input type="radio" name="q1" value="b"> B) Input → Memory → CPU → Memory → Output</label>
+            <label><input type="radio" name="q1" value="c"> C) Input → CPU → Storage → Memory → Output</label>
+            <label><input type="radio" name="q1" value="d"> D) Memory → Input → CPU → Output → Memory</label>
+        </div>
+
+        <div class="question">
+            <p>2. Which statement correctly distinguishes primary and secondary memory?</p>
+            <label><input type="radio" name="q2" value="a" required> A) Primary memory is always non-volatile, while secondary memory is volatile</label>
+            <label><input type="radio" name="q2" value="b"> B) Primary memory has larger capacity and is always slower than secondary storage</label>
+            <label><input type="radio" name="q2" value="c"> C) RAM is temporary primary memory, whereas HDD/SSD are non-volatile secondary storage</label>
+            <label><input type="radio" name="q2" value="d"> D) ROM is volatile and is normally used as secondary storage</label>
+        </div>
+
+        <div class="question">
+            <p>3. According to the memory hierarchy presented, which ordering is correct from fastest to slower?</p>
+            <label><input type="radio" name="q3" value="a" required> A) RAM → Cache → Registers → Secondary Storage</label>
+            <label><input type="radio" name="q3" value="b"> B) Registers → Cache → RAM → Secondary Storage</label>
+            <label><input type="radio" name="q3" value="c"> C) Cache → Registers → RAM → Secondary Storage</label>
+            <label><input type="radio" name="q3" value="d"> D) Registers → RAM → Cache → Secondary Storage</label>
+        </div>
+
+        <div class="question">
+            <p>4. During the fetch stage of the instruction cycle, which pair of actions occurs?</p>
+            <label><input type="radio" name="q4" value="a" required> A) ALU performs arithmetic and FLAGS are cleared</label>
+            <label><input type="radio" name="q4" value="b"> B) CU retrieves the instruction using PC and loads it into IR</label>
+            <label><input type="radio" name="q4" value="c"> C) EU decodes the instruction and BIU executes it</label>
+            <label><input type="radio" name="q4" value="d"> D) Result is stored and PC is reset to zero</label>
+        </div>
+
+        <div class="question">
+            <p>5. What is the primary purpose of incrementing the Program Counter after fetching an instruction?</p>
+            <label><input type="radio" name="q5" value="a" required> A) To store the result of the ALU operation</label>
+            <label><input type="radio" name="q5" value="b"> B) To identify the current stack segment</label>
+            <label><input type="radio" name="q5" value="c"> C) To point toward the next instruction to be fetched</label>
+            <label><input type="radio" name="q5" value="d"> D) To update the carry and zero flags</label>
+        </div>
+
+        <div class="question">
+            <p>6. Which of the following is NOT listed as a condition flag updated after execution?</p>
+            <label><input type="radio" name="q6" value="a" required> A) Carry Flag</label>
+            <label><input type="radio" name="q6" value="b"> B) Zero Flag</label>
+            <label><input type="radio" name="q6" value="c"> C) Sign Flag</label>
+            <label><input type="radio" name="q6" value="d"> D) Segment Flag</label>
+        </div>
+
+        <div class="question">
+            <p>7. Which bus is primarily responsible for carrying the actual data being transferred among CPU, memory and I/O?</p>
+            <label><input type="radio" name="q7" value="a" required> A) Data bus</label>
+            <label><input type="radio" name="q7" value="b"> B) Address bus</label>
+            <label><input type="radio" name="q7" value="c"> C) Control bus</label>
+            <label><input type="radio" name="q7" value="d"> D) Segment bus</label>
+        </div>
+
+        <div class="question">
+            <p>8. Why are control-bus signals necessary in a computer system?</p>
+            <label><input type="radio" name="q8" value="a" required> A) They permanently store instructions</label>
+            <label><input type="radio" name="q8" value="b"> B) They specify the numerical value of every operand</label>
+            <label><input type="radio" name="q8" value="c"> C) They coordinate timing and control operations</label>
+            <label><input type="radio" name="q8" value="d"> D) They increase RAM capacity</label>
+        </div>
+
+        <div class="question">
+            <p>9. Which statement about the 8086 functional organization is most accurate?</p>
+            <label><input type="radio" name="q9" value="a" required> A) BIU performs all arithmetic while EU handles memory addressing</label>
+            <label><input type="radio" name="q9" value="b"> B) BIU handles bus operations and EU executes instructions</label>
+            <label><input type="radio" name="q9" value="c"> C) EU fetches instructions directly from I/O devices</label>
+            <label><input type="radio" name="q9" value="d"> D) BIU contains the ALU and FLAGS register</label>
+        </div>
+
+        <div class="question">
+            <p>10. Which component is specifically associated with the BIU in the video?</p>
+            <label><input type="radio" name="q10" value="a" required> A) ALU</label>
+            <label><input type="radio" name="q10" value="b"> B) Flag Register</label>
+            <label><input type="radio" name="q10" value="c"> C) Instruction Decoder</label>
+            <label><input type="radio" name="q10" value="d"> D) 6-byte Instruction Queue</label>
+        </div>
+
+        <div class="question">
+            <p>11. What is the main performance advantage of the 8086 instruction queue?</p>
+            <label><input type="radio" name="q11" value="a" required> A) It eliminates the need for registers</label>
+            <label><input type="radio" name="q11" value="b"> B) It allows instruction fetching and execution to overlap</label>
+            <label><input type="radio" name="q11" value="c"> C) It makes all instructions execute in one clock cycle</label>
+            <label><input type="radio" name="q11" value="d"> D) It permanently stores the entire program</label>
+        </div>
+
+        <div class="question">
+            <p>12. While the EU is executing the current instruction, what can the BIU do?</p>
+            <label><input type="radio" name="q12" value="a" required> A) Reset all segment registers</label>
+            <label><input type="radio" name="q12" value="b"> B) Prefetch subsequent instructions</label>
+            <label><input type="radio" name="q12" value="c"> C) Modify the ALU result</label>
+            <label><input type="radio" name="q12" value="d"> D) Clear the FLAGS register</label>
+        </div>
+
+        <div class="question">
+            <p>13. What happens to the 8086 prefetch queue when a jump/branch changes the instruction sequence?</p>
+            <label><input type="radio" name="q13" value="a" required> A) It is doubled in size</label>
+            <label><input type="radio" name="q13" value="b"> B) It is converted into a stack</label>
+            <label><input type="radio" name="q13" value="c"> C) It is flushed and fetching restarts from the new address</label>
+            <label><input type="radio" name="q13" value="d"> D) It remains unchanged</label>
+        </div>
+
+        <div class="question">
+            <p>14. Which register pair is explicitly associated with the next instruction's offset within the code segment?</p>
+            <label><input type="radio" name="q14" value="a" required> A) DS:BX</label>
+            <label><input type="radio" name="q14" value="b"> B) SS:SP</label>
+            <label><input type="radio" name="q14" value="c"> C) CS:IP</label>
+            <label><input type="radio" name="q14" value="d"> D) ES:DI</label>
+        </div>
+
+        <div class="question">
+            <p>15. Which set contains only 8086 general-purpose registers?</p>
+            <label><input type="radio" name="q15" value="a" required> A) AX, BX, CX, DX</label>
+            <label><input type="radio" name="q15" value="b"> B) CS, DS, SS, ES</label>
+            <label><input type="radio" name="q15" value="c"> C) SP, BP, SI, DI</label>
+            <label><input type="radio" name="q15" value="d"> D) IP, FLAGS, CS, AX</label>
+        </div>
+
+        <div class="question">
+            <p>16. What is a key feature of AX, BX, CX and DX in the 8086?</p>
+            <label><input type="radio" name="q16" value="a" required> A) Each is 32-bit and cannot be divided</label>
+            <label><input type="radio" name="q16" value="b"> B) Each is 16-bit and can be split into high and low 8-bit halves</label>
+            <label><input type="radio" name="q16" value="c"> C) Each is a segment register</label>
+            <label><input type="radio" name="q16" value="d"> D) Each stores only memory addresses</label>
+        </div>
+
+        <div class="question">
+            <p>17. Which register is correctly matched with its primary role?</p>
+            <label><input type="radio" name="q17" value="a" required> A) SP — Stack Pointer</label>
+            <label><input type="radio" name="q17" value="b"> B) CS — Data Segment</label>
+            <label><input type="radio" name="q17" value="c"> C) IP — Stack Pointer</label>
+            <label><input type="radio" name="q17" value="d"> D) FLAGS — Source Index</label>
+        </div>
+
+        <div class="question">
+            <p>18. Which statement about the 8086 FLAGS register is correct?</p>
+            <label><input type="radio" name="q18" value="a" required> A) It stores the base address of the code segment</label>
+            <label><input type="radio" name="q18" value="b"> B) It is a 16-bit status/control register reflecting CPU state and ALU results</label>
+            <label><input type="radio" name="q18" value="c"> C) It contains the next instruction's machine code</label>
+            <label><input type="radio" name="q18" value="d"> D) It is used only for I/O addresses</label>
+        </div>
+
+        <div class="question">
+            <p>19. In immediate addressing, where is the operand value located?</p>
+            <label><input type="radio" name="q19" value="a" required> A) In a memory location specified by BX</label>
+            <label><input type="radio" name="q19" value="b"> B) In a segment register</label>
+            <label><input type="radio" name="q19" value="c"> C) Within the instruction itself</label>
+            <label><input type="radio" name="q19" value="d"> D) Only in the FLAGS register</label>
+        </div>
+
+        <div class="question">
+            <p>20. Which instruction best illustrates register addressing?</p>
+            <label><input type="radio" name="q20" value="a" required> A) MOV AX, 1234H</label>
+            <label><input type="radio" name="q20" value="b"> B) MOV AX, [2000H]</label>
+            <label><input type="radio" name="q20" value="c"> C) MOV AX, BX</label>
+            <label><input type="radio" name="q20" value="d"> D) MOV AX, [BX+05H]</label>
+        </div>
+
+        <div class="question">
+            <p>21. What distinguishes direct addressing from register-indirect addressing?</p>
+            <label><input type="radio" name="q21" value="a" required> A) Direct uses an effective address in the instruction; register-indirect obtains the address from a register</label>
+            <label><input type="radio" name="q21" value="b"> B) Direct always uses BX; register-indirect always uses IP</label>
+            <label><input type="radio" name="q21" value="c"> C) Direct contains an immediate value; register-indirect contains a segment value</label>
+            <label><input type="radio" name="q21" value="d"> D) There is no difference</label>
+        </div>
+
+        <div class="question">
+            <p>22. Which instruction most clearly represents based addressing with a displacement?</p>
+            <label><input type="radio" name="q22" value="a" required> A) MOV AX, BX</label>
+            <label><input type="radio" name="q22" value="b"> B) MOV AX, 1234H</label>
+            <label><input type="radio" name="q22" value="c"> C) MOV AX, [BX+05H]</label>
+            <label><input type="radio" name="q22" value="d"> D) MOV AX, [2000H]</label>
+        </div>
+
+        <div class="question">
+            <p>23. Which addressing mode combines a base register, an index register and a displacement?</p>
+            <label><input type="radio" name="q23" value="a" required> A) Immediate</label>
+            <label><input type="radio" name="q23" value="b"> B) Direct</label>
+            <label><input type="radio" name="q23" value="c"> C) Register</label>
+            <label><input type="radio" name="q23" value="d"> D) Based-indexed</label>
+        </div>
+
+        <div class="question">
+            <p>24. Which statement correctly compares pipelined and non-overlapped operation?</p>
+            <label><input type="radio" name="q24" value="a" required> A) Pipelining inserts idle time between every fetch and execute</label>
+            <label><input type="radio" name="q24" value="b"> B) Non-overlapped operation allows BIU and EU to work simultaneously</label>
+            <label><input type="radio" name="q24" value="c"> C) Pipelining overlaps instruction fetch with execution, reducing wasted waiting time</label>
+            <label><input type="radio" name="q24" value="d"> D) Both methods have identical instruction-fetch behavior</label>
+        </div>
+
+        <div class="question">
+            <p>25. Which option correctly matches the 8086 component to its function?</p>
+            <label><input type="radio" name="q25" value="a" required> A) EU — fetches every instruction directly from main memory</label>
+            <label><input type="radio" name="q25" value="b"> B) BIU — performs arithmetic and logical operations</label>
+            <label><input type="radio" name="q25" value="c"> C) Instruction Decoder — converts fetched instructions into operations/micro-operations for execution</label>
+            <label><input type="radio" name="q25" value="d"> D) FLAGS — stores the physical address of the next instruction</label>
+        </div>
+
+        <button type="submit">Submit Quiz</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

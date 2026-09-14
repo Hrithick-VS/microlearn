@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Certificate of Completion | MicroLearn</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 35px;
+            background: #eef2f7;
+            font-family: "Georgia", serif;
+            color: #1f2937;
+        }
+
+        .certificate {
+            position: relative;
+            max-width: 1050px;
+            min-height: 700px;
+            margin: auto;
+            padding: 65px 85px;
+            background: #ffffff;
+            border: 2px solid #b8860b;
+            outline: 10px solid #17365d;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .top-line {
+            width: 180px;
+            height: 4px;
+            background: #b8860b;
+            margin: 0 auto 20px;
+        }
+
+        .brand {
+            font-family: Arial, sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: #17365d;
+        }
+
+        .brand span {
+            color: #b8860b;
+        }
+
+        .certificate-title {
+            margin-top: 35px;
+            font-size: 42px;
+            letter-spacing: 2px;
+            color: #17365d;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            margin-top: 15px;
+            font-size: 19px;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .presented {
+            margin-top: 35px;
+            font-size: 17px;
+            color: #4b5563;
+        }
+
+        .student-name {
+            margin: 18px auto;
+            padding-bottom: 10px;
+            width: 75%;
+            border-bottom: 2px solid #b8860b;
+            font-size: 38px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .completion-text {
+            max-width: 700px;
+            margin: 25px auto;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #374151;
+        }
+
+        .course-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #17365d;
+        }
+
+        .details {
+            margin-top: 25px;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.8;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            margin-top: 45px;
+            font-family: Arial, sans-serif;
+        }
+
+        .signature {
+            width: 190px;
+            border-top: 1px solid #374151;
+            padding-top: 8px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .certificate-id {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .print-button {
+            display: block;
+            margin: 35px auto 0;
+            padding: 13px 28px;
+            background: #17365d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .print-button:hover {
+            background: #244d7d;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .certificate {
+                max-width: none;
+                width: 100%;
+                min-height: 100vh;
+                margin: 0;
+                box-shadow: none;
+            }
+
+            .print-button {
+                display: none;
+            }
+        }
+        @page {
+    size: A4 landscape;
+    margin: 0;
+}
+
+@media print {
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .certificate {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        padding: 55px 80px;
+        outline: 10px solid #17365d;
+        border: 12px solid #17365d !important;
+        box-shadow: inset 0 0 0 3px #b8860b !important;
+    }
+
+    .print-button {
+        display: none;
+    }
+}
+    </style>
+</head>
+
+<body>
+
+<div class="certificate">
+
+    <div class="top-line"></div>
+
+    <div class="brand">
+        MICRO<span>LEARN</span>
+    </div>
+
+    <div class="certificate-title">
+        CERTIFICATE OF COMPLETION
+    </div>
+
+    <div class="subtitle">
+        This certificate is proudly presented to
+    </div>
+
+    <div class="student-name">
+        {{ name }}
+    </div>
+
+    <div class="completion-text">
+        In recognition of successfully completing the
+        <br>
+
+        <span class="course-name">Microprocessor Learning Module</span>
+
+        <br>
+
+        and attending the associated online assessment.
+    </div>
+
+    <div class="details">
+        Register Number: <strong>{{ register_no }}</strong>
+                &nbsp;&nbsp; 
+        Date of Completion: <strong>{{ date }}</strong>
+    </div>
+
+    <div class="footer">
+
+
+
+
+        <div class="certificate-id">
+                                                Certificate ID: {{ certificate_id }}
+        </div>
+
+    </div>
+
+    <button class="print-button" onclick="window.print()">
+        Print / Save as PDF
+    </button>
+
+</div>
+
+</body>
+</html>

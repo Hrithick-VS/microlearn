@@ -5,4 +5,3 @@ __pycache__/
 database.db
 .env
 .DS_Store
-static/lecture.mp4

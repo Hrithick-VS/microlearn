@@ -1,23 +1,32 @@
 from flask import Flask, render_template, request, session, redirect
-import sqlite3
+import psycopg2
+import psycopg2.extras
 import uuid
+import os
 from datetime import datetime
 
 app = Flask(__name__)
 
 # Used for student sessions
-app.secret_key = "microprocessor_secret_key"
+app.secret_key = os.environ.get("SECRET_KEY", "microprocessor_secret_key")
 
-DATABASE = "database.db"
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set. "
+        "Set your Neon PostgreSQL connection string before running the app."
+    )
 
 
 # -----------------------------
 # Database connection
 # -----------------------------
-
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=psycopg2.extras.RealDictCursor
+    )
     return conn
 
 
@@ -29,17 +38,14 @@ def init_db():
 
     conn = get_db_connection()
 
-    try:
-        conn.execute("ALTER TABLE students ADD COLUMN section TEXT DEFAULT 'A'")
-        conn.commit()
-    except sqlite3.OperationalError:
-        pass
+    cur = conn.cursor()
 
-    conn.execute("""
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             register_no TEXT UNIQUE NOT NULL,
             name TEXT NOT NULL,
+            section TEXT DEFAULT 'A',
             video_progress REAL DEFAULT 0,
             video_completed INTEGER DEFAULT 0,
             quiz_completed INTEGER DEFAULT 0,
@@ -52,6 +58,7 @@ def init_db():
     """)
 
     conn.commit()
+    cur.close()
     conn.close()
 
 
@@ -70,59 +77,58 @@ def home():
 
 @app.route("/start", methods=["POST"])
 def start():
+    name = request.form["name"]
+    register_no = request.form["register_no"]
+    section = request.form["section"]
 
-    name = request.form["name"].strip()
-    register_no = request.form["register_no"].strip()
-    section = request.form["section"].strip()
+    conn = get_db_connection()
+    cur = conn.cursor()
 
-    # Store student details in session
+    cur.execute(
+        "SELECT * FROM students WHERE register_no = %s",
+        (register_no,)
+    )
+    student = cur.fetchone()
+
+    if student is None:
+        cur.execute("""
+            INSERT INTO students (register_no, name, section)
+            VALUES (%s, %s, %s)
+        """, (register_no, name, section))
+        conn.commit()
+    else:
+        cur.execute("""
+            UPDATE students
+            SET name = %s, section = %s
+            WHERE register_no = %s
+        """, (name, section, register_no))
+        conn.commit()
+
+    cur.close()
+    conn.close()
+
     session["name"] = name
     session["register_no"] = register_no
     session["section"] = section
 
-    conn = get_db_connection()
+    return redirect("/video")
 
-    # Check whether student already exists
-    student = conn.execute(
-        "SELECT * FROM students WHERE register_no = ?",
-        (register_no,)
-    ).fetchone()
 
-    if student is None:
+# -----------------------------
+# Video page
+# -----------------------------
 
-        # New student
-        conn.execute("""
-            INSERT INTO students
-            (register_no, name,section)
-            VALUES (?, ?, ?)
-        """, (register_no, name, section))
-
-        conn.commit()
-
-    else:
-
-        # Update name in case it was entered differently
-        conn.execute("""
-            UPDATE students
-            SET name = ?,section = ?
-            WHERE register_no = ?
-        """, (name, section, register_no))
-
-        conn.commit()
-
-    conn.close()
+@app.route("/video")
+def video():
+    if "register_no" not in session:
+        return redirect("/")
 
     return render_template(
         "video.html",
-        name=name,
-        register_no=register_no,
-        section=section
+        name=session.get("name"),
+        register_no=session.get("register_no"),
+        section=session.get("section")
     )
-
-
-# -----------------------------
-# Run application
-# -----------------------------
 
 # -----------------------------
 # Quiz page
@@ -136,13 +142,17 @@ def quiz():
     register_no = session["register_no"]
 
     conn = get_db_connection()
+    cur = conn.cursor()
 
-    student = conn.execute("""
+    cur.execute("""
         SELECT video_completed
         FROM students
-        WHERE register_no = ?
-    """, (register_no,)).fetchone()
+        WHERE register_no = %s
+    """, (register_no,))
 
+    student = cur.fetchone()
+
+    cur.close()
     conn.close()
 
     if not student or student["video_completed"] != 1:
@@ -154,7 +164,6 @@ def quiz():
         register_no=session.get("register_no"),
         section=session.get("section")
     )
-
 # -----------------------------
 # Submit quiz
 # -----------------------------
@@ -365,24 +374,25 @@ def submit_quiz():
     completion_date = datetime.now().strftime("%d %B %Y")
 
     conn = get_db_connection()
-
-    conn.execute("""
-        UPDATE students
-        SET quiz_completed = 1,
-            score = ?,
-            total_questions = ?,
-            certificate_generated = 1,
-            certificate_id = ?
-        WHERE register_no = ?
-    """, (
-        score,
-        total_questions,
-        certificate_id,
-        register_no
-    ))
-
+    cur = conn.cursor()
+    cur.execute("""
+    UPDATE students
+    SET quiz_completed = 1,
+        score = %s,
+        total_questions = %s,
+        certificate_generated = 1,
+        certificate_id = %s
+    WHERE register_no = %s
+""", (
+    score,
+    total_questions,
+    certificate_id,
+    register_no
+))
     conn.commit()
+    cur.close()
     conn.close()
+
 
     session["certificate_id"] = certificate_id
     session["completion_date"] = completion_date
@@ -405,12 +415,17 @@ def certificate():
     register_no = session["register_no"]
 
     conn = get_db_connection()
+    cur = conn.cursor()
 
-    student = conn.execute("""
-        SELECT * FROM students
-        WHERE register_no = ?
-    """, (register_no,)).fetchone()
+    cur.execute("""
+        SELECT *
+        FROM students
+        WHERE register_no = %s
+    """, (register_no,))
 
+    student = cur.fetchone()
+
+    cur.close()
     conn.close()
 
     if not student:
@@ -421,7 +436,10 @@ def certificate():
         name=student["name"],
         register_no=student["register_no"],
         section=student["section"],
-        date=session.get("completion_date", datetime.now().strftime("%d %B %Y")),
+        date=session.get(
+            "completion_date",
+            datetime.now().strftime("%d %B %Y")
+        ),
         certificate_id=student["certificate_id"]
     )
 # -----------------------------
@@ -430,30 +448,36 @@ def certificate():
 
 @app.route("/update_progress", methods=["POST"])
 def update_progress():
-
     if "register_no" not in session:
         return {"error": "Student not logged in"}, 401
 
     register_no = session["register_no"]
-
     data = request.get_json()
-    progress = float(data.get("progress", 0))
 
-    # Keep progress between 0 and 100
+    try:
+        progress = float(data.get("progress", 0))
+    except (TypeError, ValueError):
+        progress = 0
     progress = max(0, min(progress, 100))
 
     video_completed = 1 if progress >= 50 else 0
 
     conn = get_db_connection()
+    cur = conn.cursor()
 
-    conn.execute("""
+    cur.execute("""
         UPDATE students
-        SET video_progress = ?,
-            video_completed = ?
-        WHERE register_no = ?
-    """, (progress, video_completed, register_no))
+        SET video_progress = %s,
+            video_completed = %s
+        WHERE register_no = %s
+    """, (
+        progress,
+        video_completed,
+        register_no
+    ))
 
     conn.commit()
+    cur.close()
     conn.close()
 
     return {
@@ -499,29 +523,30 @@ def dashboard():
     if not session.get("faculty_logged_in"):
         return redirect("/admin")
 
-    conn = get_db_connection()
-
     selected_section = request.args.get("section", "ALL")
     search = request.args.get("search", "").strip()
+
+    conn = get_db_connection()
+    cur = conn.cursor()
 
     query = "SELECT * FROM students WHERE 1=1"
     params = []
 
-    # Section filter
     if selected_section != "ALL":
-        query += " AND section = ?"
+        query += " AND section = %s"
         params.append(selected_section)
 
-    # Search by name or register number
     if search:
-        query += " AND (name LIKE ? OR register_no LIKE ?)"
+        query += " AND (name ILIKE %s OR register_no ILIKE %s)"
         search_pattern = f"%{search}%"
         params.extend([search_pattern, search_pattern])
 
-    # Section order, then register number
     query += " ORDER BY section ASC, register_no ASC"
 
-    students = conn.execute(query, params).fetchall()
+    cur.execute(query, params)
+    students = cur.fetchall()
+
+    cur.close()
     conn.close()
 
     return render_template(
@@ -547,8 +572,12 @@ def clear_records():
         return redirect("/admin")
 
     conn = get_db_connection()
-    conn.execute("DELETE FROM students")
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM students")
+
     conn.commit()
+    cur.close()
     conn.close()
 
     return redirect("/dashboard")

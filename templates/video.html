@@ -353,8 +353,10 @@ const progressBar = document.getElementById("progressBar");
 
 let watchedSeconds = new Set();
 let lastTime = 0;
+let progressSaved = false;
+let savingProgress = false;
 
-video.addEventListener("timeupdate", function () {
+video.addEventListener("timeupdate", async function () {
 
     if (!video.duration || isNaN(video.duration)) {
         return;
@@ -363,14 +365,8 @@ video.addEventListener("timeupdate", function () {
     const currentTime = video.currentTime;
     const timeDifference = currentTime - lastTime;
 
-    /*
-       Count time only when video is playing normally.
-       If the student seeks forward, the time difference
-       will be large, so it will not be counted.
-    */
-
+    // Count only normally watched video time
     if (timeDifference > 0 && timeDifference <= 1.5) {
-
         const startSecond = Math.floor(lastTime);
         const endSecond = Math.floor(currentTime);
 
@@ -381,41 +377,60 @@ video.addEventListener("timeupdate", function () {
 
     lastTime = currentTime;
 
-    const progress = (watchedSeconds.size / video.duration) * 100;
+    const progress = Math.min(
+        (watchedSeconds.size / video.duration) * 100,
+        100
+    );
 
     progressText.textContent = progress.toFixed(0);
     progressBar.style.width = progress + "%";
 
-    console.log("Actual watched progress:", progress);
+    // Save progress when it reaches 50%
+    if (progress >= 50 && !progressSaved && !savingProgress) {
 
-    if (progress >= 50) {
+        savingProgress = true;
 
-        quizButton.style.pointerEvents = "auto";
-        quizButton.style.opacity = "1";
-        quizButton.style.background = "#2563eb";
-        quizButton.textContent = "Quiz Unlocked →";
+        try {
+            const response = await fetch("/update_progress", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    progress: progress
+                })
+            });
 
-        document.querySelector(".quiz-message").textContent =
-            "✅ You can now take the quiz!";
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                progressSaved = true;
+
+                quizButton.style.pointerEvents = "auto";
+                quizButton.style.opacity = "1";
+                quizButton.style.background = "#2563eb";
+                quizButton.textContent = "Quiz Unlocked →";
+
+                document.querySelector(".quiz-message").textContent =
+                    "✅ Your progress is saved. You can now take the quiz!";
+            } else {
+                alert("Progress could not be saved. Please try again.");
+            }
+
+        } catch (error) {
+            console.error("Error saving progress:", error);
+            alert("Unable to save progress. Check your connection.");
+        }
+
+        savingProgress = false;
     }
-
-    fetch("/update_progress", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            progress: progress
-        })
-    });
 });
 
+// Prevent seeking from falsely increasing progress
 video.addEventListener("seeking", function () {
-    // Reset reference time when student seeks
     lastTime = video.currentTime;
 });
 </script>
-
 </body>
 
 </html>
